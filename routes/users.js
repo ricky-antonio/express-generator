@@ -9,12 +9,12 @@ const router = express.Router();
 /* GET users listing. */
 router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
 	User.find()
-            .then(users => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(users);
-            })
-            .catch(err => next(err));
+		.then(users => {
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'application/json');
+			res.json(users);
+		})
+		.catch(err => next(err));
 	// res.send('respond with a resource');
 });
 
@@ -71,6 +71,15 @@ router.get('/logout', cors.corsWithOptions, (req, res, next) => {
 		const err = new Error('You are not logged in!');
 		err.status = 401;
 		return next(err);
+	}
+});
+
+router.get('/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
+	if (req.user) {
+		const token = authenticate.getToken({_id: req.user._id});
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json');
+		res.json({success: true, token:token, status: 'You are succesfully logged in!'});
 	}
 });
 
